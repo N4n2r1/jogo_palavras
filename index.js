@@ -1,221 +1,309 @@
-// Seleção dos elementos do DOM
-const setupContainer = document.getElementById('setup-container');
-const gameContainer = document.getElementById('game-container');
-const wordDisplay = document.getElementById('word-display');
-const gameMessage = document.getElementById('game-message');
-const errorCount = document.getElementById('error-count');
-const resetBtn = document.getElementById('reset-btn');
-const hintToast = document.getElementById('hint-toast');
-const hintTextContent = document.getElementById('hint-text-content');
+// ============================
+// ELEMENTOS DA TELA
+// ============================
 
-const URL_API = "https://api-palavras-8ptt.onrender.com";
+const setupContainer = document.getElementById('setup-container')
+const gameContainer = document.getElementById('game-container')
 
-// Efeitos sonoros
-const somAcerto = new Audio('corr.mp3');
-const somErro = new Audio('err.mp3');
+const wordDisplay = document.getElementById('word-display')
 
-somAcerto.volume = 0.5;
-somErro.volume = 0.5;
+const gameMessage = document.getElementById('game-message')
 
-// =========================================================
-// DICIONÁRIO SECRETO (Para descriptografar a palavra pela dica)
-// Mapeie aqui as dicas da sua API e as respectivas respostas!
-// =========================================================
-const BANCO_DE_PALAVRAS_REVELADAS = {
-    "DEPOSITO DE BEBIDA": "ADEGA",
-    "INSTITUICAO FINANCEIRA OU ASSENTO LONGO": "BANCO",
-    "ANIMAL LATIDO": "CACHORRO",
-    "FRUTA AMARELA": "BANANA",
-    "OBJETO PARA ESCREVER": "CANETA"
-    // Adicione mais aqui se lembrar de outras dicas da sua API!
-};
+const errorCount = document.getElementById('error-count')
 
-// Função para remover acentos e facilitar a comparação das dicas
-function limparTexto(texto) {
-    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+const resetBtn = document.getElementById('reset-btn')
+
+const hintText = document.getElementById('hint-text-content')
+
+// ============================
+// DIFICULDADE
+// ============================
+
+let dificuldadeSelecionada = 'facil'
+
+// ============================
+// AUDIOS
+// ============================
+
+const somAcerto = new Audio('corr.mp3')
+const somErro = new Audio('err.mp3')
+
+somAcerto.volume = 0.6
+somErro.volume = 0.6
+
+// ============================
+// API
+// ============================
+
+const URL_API = 'https://api-palavras-8ptt.onrender.com'
+
+// ============================
+// SELECIONAR DIFICULDADE
+// ============================
+
+function selecionarDificuldade(nivel, botao) {
+
+    dificuldadeSelecionada = nivel
+
+    document.querySelectorAll('.difficulty-btn')
+        .forEach(btn => {
+            btn.classList.remove('selected')
+        })
+
+    botao.classList.add('selected')
 }
 
-// Função para iniciar o jogo
+// ============================
+// INICIAR JOGO
+// ============================
+
 async function iniciarJogo(event) {
-    if (event && event.key !== "Enter") return;
 
-    const nickname = document.getElementById('nickname-input').value;
+    if (event.key == 'Enter') {
 
-    if (!nickname) {
-        alert('Preencha o nickname!');
-        return;
-    }
+        const nickname = document.getElementById('nickname-input').value
 
-    try {
-        const response = await fetch(`${URL_API}/iniciar`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nickname: nickname })
-        });
+        if (!nickname) {
 
-        const data = await response.json();
-
-        if (data.erro) {
-            alert(data.erro);
-            return;
-        }
-
-        setupContainer.classList.add('hidden');
-        gameContainer.classList.remove('hidden');
-        document.getElementById('player-display').innerText = data.mensagem;
-
-        buscarPalavra();
-    } catch (error) {
-        console.error("Erro ao iniciar o jogo:", error);
-    }
-}
-
-// Função para buscar o status da palavra secreta e exibir a dica
-async function buscarPalavra() {
-    try {
-        const response = await fetch(`${URL_API}/status`, {
-            credentials: 'include',
-            method: 'GET'
-        });
-
-        const data = await response.json();
-
-        wordDisplay.innerHTML = '';
-
-        for (let i = 0; i < data.qtde_caracteres; i++) {
-            const span = document.createElement('span');
-            span.className = 'letter-slot';
-            span.id = `slot-${i}`;
-            wordDisplay.appendChild(span);
-        }
-
-        if (data.dica) {
-            hintTextContent.innerText = data.dica.toUpperCase();
-            hintToast.classList.add('show');
-        }
-
-    } catch (error) {
-        console.error("Erro ao buscar a palavra:", error);
-    }
-}
-
-// Função para processar a tentativa de letra
-// Função para processar a tentativa de letra e descobrir a palavra certa na marra!
-// Função para processar a tentativa de letra e descobrir a palavra por cruzamento inteligente
-// Função para processar a tentativa de letra e desvendar o tabuleiro via alfabeto se perder
-// Função para processar a tentativa de letra
-async function tentarLetra(event) {
-    if (event.key === "Enter") {
-        const input = document.getElementById('letter-input');
-        const caractere = input.value;
-        input.value = '';
-        input.focus();
-
-        if (!caractere) {
-            alert("Digite uma letra!");
-            return;
+            alert('Preencha o nickname para prosseguir')
+            return
         }
 
         try {
-            // Guarda o número de erros antes da nova tentativa para comparar depois
-            const errosAntes = parseInt(errorCount.innerText) || 0;
 
-            const response = await fetch(`${URL_API}/tentativa`, {
+            const response = await fetch(`${URL_API}/iniciar`, {
+
                 method: 'POST',
+
                 credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ caractere: caractere })
-            });
 
-            const data = await response.json();
+                headers: {
+                    'Content-Type': 'application/json'
+                },
 
-            // Preenche as letras encontradas nas posições corretas
-            if (data.posicoes && data.posicoes.length > 0) {
-                data.posicoes.forEach(pos => {
-                    const slot = document.getElementById(`slot-${pos}`);
-                    if (slot) slot.innerText = caractere.toUpperCase();
-                });
+                body: JSON.stringify({
+
+                    nickname: nickname,
+
+                    nivel: dificuldadeSelecionada
+                })
+            })
+
+            const data = await response.json()
+
+            if (data.erro) {
+
+                alert(data.erro)
+                return
             }
 
-            // --- LÓGICA DOS EFEITOS SONOROS ---
-            if (data.erros_atuais > errosAntes) {
-                somErro.currentTime = 0; 
-                somErro.play();
-            } else if (data.posicoes && data.posicoes.length > 0) {
-                somAcerto.currentTime = 0;
-                somAcerto.play();
-            }
+            setupContainer.classList.add('hidden')
 
-            // Atualiza os contadores de erro na tela
-            errorCount.innerText = data.erros_atuais;
-            gameMessage.innerText = data.mensagem;
+            gameContainer.classList.remove('hidden')
 
-            // Atualiza visualmente os corações do HTML com base nos erros
-            atualizarCoracoes(data.erros_atuais);
+            document.getElementById('player-display').innerText =
+                `${data.mensagem} | ${dificuldadeSelecionada.toUpperCase()}`
 
-            // Verifica o fim do jogo
-            if (data.status_jogo !== 'Jogando') {
-                resetBtn.classList.remove('hidden');
-                input.disabled = true; // Bloqueia o campo de digitação
+            buscarPalavra()
 
-                document.body.classList.remove('retro-win', 'retro-lose');
+        } catch (erro) {
 
-                if (data.status_jogo === 'Derrota') {
-                    gameMessage.style.color = '#ef4444'; 
-                    document.body.classList.add('retro-lose');
-                    
-                    // Lê o dado enviado pelo seu novo ajuste no back-end
-                    const palavraCerta = data.palavra_correta || data.palavra || '';
+            alert('Erro ao iniciar o jogo')
 
-                    if (palavraCerta) {
-                        // Exibe a resposta correta no letreiro de forma estilizada
-                        gameMessage.innerHTML = `GAME OVER!<br>A PALAVRA ERA: <span style="color: #fff; background-color: #ef4444; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px;">${palavraCerta.toUpperCase()}</span>`;
-                        
-                        // Preenche visualmente os slots vazios para revelar o tabuleiro completo
-                        const slots = document.querySelectorAll('.letter-slot');
-                        for (let i = 0; i < slots.length; i++) {
-                            if (!slots[i].innerText || slots[i].innerText.trim() === "") {
-                                slots[i].innerText = palavraCerta[i].toUpperCase();
-                                slots[i].style.color = "#ef4444"; // Letras reveladas ficam em destaque vermelho
-                                slots[i].style.borderColor = "#ef4444";
-                            }
-                        }
-                    } else {
-                        // Fallback de segurança caso o deploy do back-end ainda não tenha rodado
-                        gameMessage.innerHTML = `GAME OVER!<br><span style="color: #fff; background-color: #ef4444; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px;">SISTEMA INDISPONÍVEL</span>`;
-                    }
-
-                } else {
-                    gameMessage.innerText = "PARABÉNS! VOCÊ VENCEU!";
-                    gameMessage.style.color = '#22c55e'; 
-                    document.body.classList.add('retro-win');
-                }
-                
-                setTimeout(() => {
-                    document.body.classList.remove('retro-win', 'retro-lose');
-                }, 2000);
-            }
-        } catch (error) {
-            console.error("Erro ao processar a letra:", error);
+            console.error(erro)
         }
     }
 }
 
-// Função auxiliar para apagar os corações conforme os erros aumentam
-function atualizarCoracoes(erros) {
-    const hearts = document.querySelectorAll('#hearts-display .heart-icon');
-    hearts.forEach((heart, index) => {
-        if (index < erros) {
-            heart.style.opacity = '0.2';
-            heart.style.filter = 'grayscale(100%)';
-        } else {
-            heart.style.opacity = '1';
-            heart.style.filter = 'none';
+// ============================
+// BUSCAR PALAVRA
+// ============================
+
+async function buscarPalavra() {
+
+    try {
+
+        const response = await fetch(`${URL_API}/status`, {
+
+            credentials: 'include',
+
+            method: 'GET'
+        })
+
+        const data = await response.json()
+
+        wordDisplay.innerHTML = ''
+
+        hintText.innerText = `DICA: ${data.dica}`
+
+        // ============================
+        // CRIAR ESPAÇOS
+        // ============================
+
+        for (let i = 0; i < data.qtde_caracteres; i++) {
+
+            const span = document.createElement('span')
+
+            span.className = 'letter-slot'
+
+            span.id = `slot-${i}`
+
+            wordDisplay.appendChild(span)
         }
-    });
+
+    } catch (erro) {
+
+        alert('Erro ao buscar palavra')
+
+        console.error(erro)
+    }
 }
 
+// ============================
+// TENTAR LETRA
+// ============================
+
+async function tentarLetra(event) {
+
+    if (event.key == "Enter") {
+
+        const input = document.getElementById('letter-input')
+
+        const caractere = input.value.toLowerCase()
+
+        input.value = ''
+
+        input.focus()
+
+        if (!caractere) {
+
+            alert('Digite um caractere para jogar!')
+
+            return
+        }
+
+        try {
+
+            const response = await fetch(`${URL_API}/tentativa`, {
+
+                method: 'POST',
+
+                credentials: 'include',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({
+                    caractere: caractere
+                })
+            })
+
+            const data = await response.json()
+
+            // ============================
+            // SOM
+            // ============================
+
+            if (data.posicoes.length > 0) {
+
+                somAcerto.currentTime = 0
+
+                somAcerto.play()
+
+            } else {
+
+                somErro.currentTime = 0
+
+                somErro.play()
+            }
+
+            // ============================
+            // MOSTRAR LETRAS
+            // ============================
+
+            data.posicoes.forEach(pos => {
+
+                document.getElementById(`slot-${pos}`).innerText =
+                    caractere.toUpperCase()
+            })
+
+            // ============================
+            // STATUS
+            // ============================
+
+            errorCount.innerText = data.erros_atuais
+
+            gameMessage.innerText = data.mensagem
+
+            // ============================
+            // FIM DE JOGO
+            // ============================
+
+            if (data.status_jogo != 'Jogando') {
+
+                resetBtn.classList.remove('hidden')
+
+                input.disabled = true
+
+                // ============================
+                // DERROTA
+                // ============================
+
+                if (data.status_jogo == 'Derrota') {
+
+                    gameMessage.style.color = '#ff6b6b'
+
+                    document.body.classList.add('lose')
+
+                    // MOSTRAR PALAVRA
+
+                    if (data.palavra) {
+
+                        wordDisplay.innerHTML = ''
+
+                        data.palavra.split('').forEach(letra => {
+
+                            const span = document.createElement('span')
+
+                            span.className = 'letter-slot'
+
+                            span.innerText = letra.toUpperCase()
+
+                            wordDisplay.appendChild(span)
+                        })
+                    }
+
+                    gameMessage.innerText +=
+                        ` | Palavra: ${data.palavra}`
+                }
+
+                // ============================
+                // VITÓRIA
+                // ============================
+
+                else {
+
+                    gameMessage.style.color = '#7dff98'
+
+                    document.body.classList.add('win')
+                }
+            }
+
+        } catch (erro) {
+
+            alert('Erro ao enviar tentativa')
+
+            console.error(erro)
+        }
+    }
+}
+
+// ============================
+// REINICIAR
+// ============================
+
 function reiniciarJogo() {
-    location.reload();
+
+    location.reload()
 }

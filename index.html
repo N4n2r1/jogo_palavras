@@ -13,19 +13,40 @@
     <div class="grid-bg"></div>
 
     <div class="arcade-container">
-        
-        <div id="hint-toast" class="hint-toast">
-            <p class="panel-label" style="margin: 0 0 5px 0; color: #f6e05e;">💡 PALAVRA-HINT</p>
-            <p id="hint-text-content" style="margin: 0; font-size: 0.75rem; line-height: 1.4; color: #fff;"></p>
+
+        <div class="hint-box">
+            <span>💡 DICA:</span>
+            <p id="hint-text-content"></p>
         </div>
 
         <h1 class="game-title">JOGO DAS PALAVRAS</h1>
 
         <div id="setup-container" class="panel">
             <p class="panel-label">NICKNAME-INPUT</p>
-            <input onkeydown="iniciarJogo(event)" type="text" id="nickname-input" placeholder="Digite seu nickname...">
-            <button onclick="simularEnter()" class="btn-primary">PRESSIONAR ENTER</button>
+             <input onkeydown="iniciarJogo(event)" type="text" id="nickname-input" placeholder="Digite seu nickname...">
+            <div class="difficulty-container">
+        <span class="arcade-label">SELECIONE A DIFICULDADE:</span>
+        <div class="difficulty-options">
+            <label class="diff-option">
+                <input type="radio" name="dificuldade" value="Fácil" checked />
+                <span class="radio-custom facil">FÁCIL</span>
+            </label>
+            <label class="diff-option">
+                <input type="radio" name="dificuldade" value="Médio" />
+                <span class="radio-custom medio">MÉDIO</span>
+            </label>
+            <label class="diff-option">
+                <input type="radio" name="dificuldade" value="Difícil" />
+                <span class="radio-custom dificil">DIFÍCIL</span>
+            </label>
         </div>
+        <br>
+            <button onclick="simularEnter()" class="btn-primary">
+            PRESSIONAR ENTER
+        </button>
+
+        </div> <!-- FECHA difficulty-container -->
+        </div> <!-- FECHA setup-container -->
 
         <div id="game-container" class="panel hidden">
             <div class="player-header">

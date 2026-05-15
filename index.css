@@ -355,3 +355,85 @@ input[type="text"]::placeholder {
         right: 0;
     }
 }
+
+.difficulty-container {
+    margin-top: 20px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.difficulty-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.diff-option {
+    cursor: pointer;
+    flex: 1;
+}
+
+/* Esconde a bolinha padrão sem graça do navegador */
+.diff-option input[type="radio"] {
+    display: none;
+}
+
+/* Cria nossos botões customizados estilo Arcade */
+.radio-custom {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    border: 2px solid #4a5568;
+    border-radius: 6px;
+    font-family: 'Courier New', Courier, monospace; /* Ou a sua fonte pixel/retro */
+    font-weight: bold;
+    color: #a0aec0;
+    transition: all 0.2s ease;
+    background: #1a202c;
+}
+
+/* Efeito de hover (passar o mouse) */
+.diff-option:hover .radio-custom {
+    filter: brightness(1.2);
+}
+
+/* Estilo quando o botão "Fácil" for selecionado (Verde) */
+.diff-option input[type="radio"]:checked + .radio-custom.facil {
+    border-color: #22c55e;
+    color: #fff;
+    background-color: rgba(34, 197, 94, 0.2);
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+/* Estilo quando o botão "Médio" for selecionado (Amarelo/Laranja) */
+.diff-option input[type="radio"]:checked + .radio-custom.medio {
+    border-color: #eab308;
+    color: #fff;
+    background-color: rgba(234, 179, 8, 0.2);
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+}
+
+/* Estilo quando o botão "Difícil" for selecionado (Vermelho) */
+.diff-option input[type="radio"]:checked + .radio-custom.dificil {
+    border-color: #ef4444;
+    color: #fff;
+    background-color: rgba(239, 68, 68, 0.2);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.hint-box {
+    margin-top: 15px;
+    background: #1a202c;
+    border: 2px solid #f6e05e;
+    border-radius: 10px;
+    padding: 12px;
+    color: white;
+    font-size: 0.8rem;
+    box-shadow: 0 0 10px #f6e05e55;
+}
+
+.hint-box span {
+    color: #f6e05e;
+    display: block;
+    margin-bottom: 6px;
+}
