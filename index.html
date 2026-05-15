@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo das Palavras - Arcade Edition</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <div class="arcade-container">
+        
+        <div id="hint-toast" class="hint-toast">
+            <p class="panel-label" style="margin: 0 0 5px 0; color: #f6e05e;">💡 PALAVRA-HINT</p>
+            <p id="hint-text-content" style="margin: 0; font-size: 0.75rem; line-height: 1.4; color: #fff;"></p>
+        </div>
+
+        <h1 class="game-title">JOGO DAS PALAVRAS</h1>
+
+        <div id="setup-container" class="panel">
+            <p class="panel-label">NICKNAME-INPUT</p>
+            <input onkeydown="iniciarJogo(event)" type="text" id="nickname-input" placeholder="Digite seu nickname...">
+            <button onclick="simularEnter()" class="btn-primary">PRESSIONAR ENTER</button>
+        </div>
+
+        <div id="game-container" class="panel hidden">
+            <div class="player-header">
+                <span class="avatar">👤</span>
+                <div class="player-info">
+                    <p class="panel-label">PLAYER-DISPLAY</p>
+                    <h2 id="player-display">JOGADOR 1</h2>
+                </div>
+            </div>
+            
+            <p class="panel-label">WORD-DISPLAY</p>
+            <div id="word-display" class="word-slots"></div>
+            
+            <div class="input-wrapper">
+                <label for="letter-input" class="panel-label">LETRA:</label>
+                <input onkeydown="tentarLetra(event)" type="text" id="letter-input" maxlength="1" placeholder="Letra">
+            </div>
+
+            <div class="status-info">
+                <p class="panel-label">STATUS-INFO</p>
+                <div class="error-container">
+                    <p class="panel-label" style="margin: 0;">ERROR-COUNT</p>
+                    <div class="lives-row">
+                        <div id="hearts-display">
+                            <span class="heart-icon active">❤️</span>
+                            <span class="heart-icon active">❤️</span>
+                            <span class="heart-icon active">❤️</span>
+                            <span class="heart-icon active">❤️</span>
+                        </div>
+                        <p class="error-text">Erros: <span id="error-count">0</span> / 4</p>
+                    </div>
+                </div>
+                
+                <div class="message-container">
+                    <p class="panel-label">GAME-MESSAGE</p>
+                    <p id="game-message" class="blink">Digite uma letra para começar!</p>
+                </div>
+            </div>
+            
+            <p class="panel-label">RESET-BTM</p>
+            <button onclick="reiniciarJogo()" id="reset-btn" class="btn-reset">JOGAR NOVAMENTE</button>
+        </div>
+
+        <p class="credits-text" style="font-size: 0.6rem; color: #a0aec0; margin-top: 20px; text-transform: uppercase;">Desenvolvido por Riana Pinheiro</p>
+    </div>
+
+    <div class="decorations">
+        <span class="star" style="top: 10%; left: 10%;">⭐</span>
+        <span class="star" style="top: 22%; left: 7%;">⭐</span>
+        <span class="star" style="top: 65%; left: 6%;">⭐</span>
+        <span class="star" style="top: 76%; left: 14%;">⭐</span>
+        
+        <span class="star" style="top: 25%; right: 7%;">⭐</span>
+        <span class="heart-deco" style="top: 10%; right: 14%;">❤️</span>
+        <span class="heart-deco" style="top: 35%; right: 8%;">❤️</span>
+        <span class="heart-deco" style="bottom: 12%; left: 9%;">❤️</span>
+    </div>
+
+    <script src="index.js"></script>
+    <script>
+        function simularEnter() {
+            const input = document.getElementById('nickname-input');
+            const event = new KeyboardEvent('keydown', { key: 'Enter' });
+            iniciarJogo(event);
+        }
+    </script>
+</body>
+</html>
